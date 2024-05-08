@@ -50,9 +50,25 @@ func (this *User) Offline() {
 	this.server.BroadCast(this, "下线")
 }
 
+// SendMsg 给当前user对应的客户端发送消息
+func (this *User) SendMsg(msg string) {
+	this.conn.Write([]byte(msg))
+}
+
 // DoMessage 用户的消息处理业务
 func (this *User) DoMessage(msg string) {
-	this.server.BroadCast(this, msg)
+	if msg == "who" {
+		//查询当前用户在线
+		this.server.mapLock.Lock()
+		for _, user := range this.server.OnlineMap {
+			onlineMsg := "[" + user.Addr + "]" + user.Name + "]" + ":" + "在线...\n"
+			this.SendMsg(onlineMsg)
+		}
+		this.server.mapLock.Unlock()
+
+	} else {
+		this.server.BroadCast(this, msg)
+	}
 }
 
 // ListenMessage 监听当前User channel的方法，一旦有消息，就直接发送给对应客户端
