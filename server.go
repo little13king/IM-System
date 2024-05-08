@@ -28,34 +28,8 @@ func NewServer(ip string, port int) *Server {
 	return server
 }
 
-// 启动服务器的接口
-func (this *Server) Start() {
-	//socket listen
-	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", this.Ip, this.Port))
-	if err != nil {
-		fmt.Println("net.Listen err", err)
-		return
-	}
-	//close listen socket
-	defer listener.Close()
-
-	//启动监听Message的goroutine
-	go this.ListenMessager()
-
-	for {
-		//accept
-		conn, err := listener.Accept()
-		if err != nil {
-			fmt.Println("listener accept err:", err)
-			continue
-		}
-		//do handler
-		go this.Handler(conn)
-	}
-}
-
-// 监听Message广播消息channel中的go，一旦有消息就发送给全部的在线user
-func (this Server) ListenMessager() {
+// ListenMessager 监听Message广播消息channel中的go，一旦有消息就发送给全部的在线user
+func (this *Server) ListenMessager() {
 	for {
 		msg := <-this.Message
 
@@ -89,5 +63,30 @@ func (this *Server) Handler(conn net.Conn) {
 
 	//当前handler阻塞
 	select {}
+}
 
+// Start 启动服务器的接口
+func (this *Server) Start() {
+	//socket listen
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", this.Ip, this.Port))
+	if err != nil {
+		fmt.Println("net.Listen err", err)
+		return
+	}
+	//close listen socket
+	defer listener.Close()
+
+	//启动监听Message的goroutine
+	go this.ListenMessager()
+
+	//accept
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			fmt.Println("listener accept err:", err)
+			continue
+		}
+		//do handler
+		go this.Handler(conn)
+	}
 }

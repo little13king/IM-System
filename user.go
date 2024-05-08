@@ -9,10 +9,9 @@ type User struct {
 	conn net.Conn
 }
 
-// 创建一个用户的api
+// NewUser 创建一个用户的api
 func NewUser(conn net.Conn) *User {
 	userAddr := conn.RemoteAddr().String()
-
 	user := &User{
 		Name: userAddr,
 		Addr: userAddr,
@@ -25,7 +24,7 @@ func NewUser(conn net.Conn) *User {
 	return user
 }
 
-// 监听当前User channel的方法，一旦有消息，就直接发送给对应客户端
+// ListenMessage 监听当前User channel的方法，一旦有消息，就直接发送给对应客户端
 func (this *User) ListenMessage() {
 	for {
 		msg := <-this.C
