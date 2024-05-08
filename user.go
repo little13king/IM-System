@@ -60,7 +60,7 @@ func (this *User) SendMsg(msg string) {
 
 // DoMessage 用户的消息处理业务
 func (this *User) DoMessage(msg string) {
-	if msg[:3] == "who" {
+	if len(msg) == 3 && msg[:3] == "who" {
 		//查询当前用户在线
 		this.server.mapLock.Lock()
 		for _, user := range this.server.OnlineMap {
