@@ -40,6 +40,30 @@ func (client *Client) DealResponse() {
 	io.Copy(os.Stdout, client.conn)
 }
 
+func (client *Client) PublicChat() {
+	var chatMsg string
+
+	//提示用户输入消息
+	fmt.Println(">>>>请输入聊天内容，exit退出.")
+	fmt.Scanln(&chatMsg)
+	for chatMsg != "exit" {
+		//发送给服务器
+		//消息为空不发送
+		if len(chatMsg) != 0 {
+			sendMsg := chatMsg + "\n"
+			_, err := client.conn.Write([]byte(sendMsg))
+			if err != nil {
+				fmt.Println("conn write error", err)
+				break
+			}
+		}
+
+		chatMsg = ""
+		fmt.Println(">>>>请输入聊天内容，exit退出.")
+		fmt.Scanln(&chatMsg)
+	}
+}
+
 func (client *Client) UpdateName() bool {
 
 	fmt.Println(">>>>请输入用户名：")
@@ -81,6 +105,7 @@ func (client *Client) Run() {
 		switch client.flag {
 		case 1:
 			//公聊模式
+			client.PublicChat()
 			fmt.Println("公聊模式选择...")
 			break
 		case 2:
