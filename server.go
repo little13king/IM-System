@@ -19,7 +19,7 @@ type Server struct {
 	Message chan string
 }
 
-// 创建一个server的接口
+// NewServer 创建一个server的接口
 func NewServer(ip string, port int) *Server {
 	server := &Server{
 		Ip:        ip,
@@ -44,8 +44,9 @@ func (this *Server) ListenMessager() {
 	}
 }
 
-// 广播消息的方法
+// BroadCast 广播消息的方法
 func (this *Server) BroadCast(user *User, msg string) {
+	//sendMsg := fmt.Sprintf("[%s]%s:%s", user.Addr, user.Name, msg)
 	sendMsg := "[" + user.Addr + "]" + user.Name + ":" + msg
 	fmt.Println(sendMsg) // 输出消息到终端
 	this.Message <- sendMsg
@@ -92,7 +93,7 @@ func (this *Server) Handler(conn net.Conn) {
 		case <-isLive:
 			//当前用户是活跃的，应当重置定时器
 
-		case <-time.After(time.Second * 10):
+		case <-time.After(time.Second * 300):
 			//已经超时
 			//将当前user强制关闭
 
